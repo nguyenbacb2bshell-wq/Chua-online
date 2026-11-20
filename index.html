@@ -99,15 +99,15 @@ async function sit(s){
   try{localStorage.setItem('nick',nick)}catch(e){}
   const r=ref(db,'seats/'+s);
   try{
-    await onDisconnect(r).remove();
     const res=await runTransaction(r,cur=>cur===null?{uid,nick,since:Date.now()}:undefined);
     if(!res.committed){try{await onDisconnect(r).cancel()}catch(e){}setMsg('Chỗ này vừa có người ngồi. Hãy chọn chỗ khác.');return;}
+    await onDisconnect(r).remove();
     const old=mySeat;mySeat=s;mySince=Date.now();
     if(old!==null){try{await onDisconnect(ref(db,'seats/'+old)).cancel();await remove(ref(db,'seats/'+old));}catch(e){}}
     render();bell();interacted=true;applyAudio();
   }catch(e){
     try{await onDisconnect(r).cancel()}catch(_){}
-    setMsg('Không ngồi được chỗ này (chỗ có thể đang bị khóa).');
+    setMsg('Không ngồi được: '+(e.code||e.message));
   }
 }
 async function leave(){
