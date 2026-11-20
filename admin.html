@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Quản trị Chùa Online</title>
+<style>
+
+:root{--bg:#fbf3e4;--card:#fffaf0;--ink:#3b2a1a;--mute:#8a7357;--gold:#c8902e;--free:#f0e2c4;--taken:#b5452f;--me:#2f7d4f;--line:#e3d3b0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1610;--card:#2a2016;--ink:#f3e6cf;--mute:#b19c7c;--gold:#e0a94a;--free:#3b2e1e;--taken:#d9654d;--me:#4fb57a;--line:#4a3a26}}
+:root[data-theme="dark"]{--bg:#1d1610;--card:#2a2016;--ink:#f3e6cf;--mute:#b19c7c;--gold:#e0a94a;--free:#3b2e1e;--taken:#d9654d;--me:#4fb57a;--line:#4a3a26}
+html{color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+main{max-width:560px;margin:0 auto;padding:18px 14px 40px}
+h1{font-size:1.5rem;margin:6px 0 2px;text-align:center}
+.sub{text-align:center;color:var(--mute);margin:0 0 14px;font-size:.95rem}
+.roof{height:46px;margin:0 auto -2px;max-width:420px;background:var(--gold);clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.9}
+.hall{background:var(--card);border:2px solid var(--gold);border-radius:12px;padding:12px;max-width:520px;margin:0 auto}
+.altar{position:relative;max-width:400px;margin:0 auto 12px;border-radius:10px;overflow:hidden;border:2px solid var(--gold);box-shadow:0 0 18px rgba(255,200,90,.45)}.altar img{display:block;width:100%;height:auto}.altar .glow{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(ellipse at 50% 42%,rgba(255,214,120,.38),rgba(255,170,60,.12) 45%,transparent 70%);animation:gl 3.2s ease-in-out infinite alternate}@keyframes gl{from{opacity:.35}to{opacity:1}}@media (prefers-reduced-motion:reduce){.altar .glow{animation:none}}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:minmax(48px,auto);gap:6px}
+.seat{border-radius:14px;border:2px solid var(--line);background:var(--free);color:var(--ink);font-size:.78rem;font-weight:600;line-height:1.15;cursor:pointer;padding:4px 5px;display:grid;place-items:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;touch-action:manipulation}
+.seat.taken,.seat.me{font-size:.72rem}.seat.taken{background:var(--taken);border-color:var(--taken);color:#fff;cursor:default}
+.seat.me{background:var(--me);border-color:var(--me);color:#fff}
+.seat:focus-visible{outline:3px solid var(--gold)}
+.bar{display:flex;gap:8px;max-width:420px;margin:14px auto 0}
+.bar input{flex:1;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:1rem}
+.bar button,.leave{padding:10px 14px;border-radius:10px;border:0;background:var(--gold);color:#2a1a05;font-weight:700;font-size:1rem;cursor:pointer}
+.stats{display:flex;justify-content:space-between;max-width:420px;margin:12px auto 0;font-size:.95rem}
+.msg{max-width:420px;margin:10px auto 0;text-align:center;min-height:1.4em;color:var(--mute);font-size:.92rem}
+.note{max-width:420px;margin:18px auto 0;font-size:.82rem;color:var(--mute);text-align:center}
+.snd{display:flex;gap:8px;max-width:420px;margin:12px auto 0}.snd button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:.92rem;cursor:pointer}
+.legend{display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:.8rem;color:var(--mute)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px auto;max-width:520px}
+.card h2{font-size:1.05rem;margin:0 0 8px}
+.card input,.card select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:1rem;margin:4px 0}
+.btn{padding:10px 14px;border-radius:10px;border:0;background:var(--gold);color:#2a1a05;font-weight:700;font-size:.95rem;cursor:pointer;margin:4px 4px 0 0}
+.btn.red{background:var(--taken);color:#fff}.btn.ghost{background:var(--free);color:var(--ink)}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.seat.lock{opacity:.55}.seat.sel{outline:3px solid var(--gold)}
+.err{color:var(--taken);font-size:.9rem;min-height:1.2em}
+.small{color:var(--mute);font-size:.85rem}
+.grid{max-width:520px;margin:0 auto}
+</style>
+</head>
+<body>
+<main>
+<h1>🛠️ Quản trị Chùa</h1>
+<div id="loginBox" class="card">
+  <h2>Đăng nhập quản trị</h2>
+  <input id="em" type="email" placeholder="Email quản trị" autocomplete="username">
+  <input id="pw" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+  <button class="btn" id="loginBtn" type="button">Đăng nhập</button>
+  <div class="err" id="loginErr"></div>
+</div>
+<div id="panel" hidden>
+  <div class="card"><div class="row"><b id="stat"></b><button class="btn ghost" id="outBtn" type="button">Đăng xuất</button></div>
+  <div id="initBox" hidden><p class="small">Chùa chưa có cài đặt.</p><button class="btn" id="initBtn" type="button">Khởi tạo chùa (100 chỗ)</button></div></div>
+  <div class="grid" id="grid"></div>
+  <div class="card" id="detail"><span class="small">Bấm vào một chỗ để quản lý.</span></div>
+  <div class="card"><h2>Số chỗ ngồi</h2><input id="seatN" type="number" min="1" max="300"><button class="btn" id="saveN" type="button">Lưu số chỗ</button><div class="small">Giảm số chỗ sẽ mời những người ngồi ở chỗ bị bớt đi ra.</div></div>
+  <div class="card"><h2>Bài kinh</h2><div id="tracks"></div>
+    <input id="tn" placeholder="Tên bài kinh mới"><input id="tu" placeholder="Tên file hoặc link mp3, ví dụ kinh2.mp3">
+    <button class="btn" id="addT" type="button">Thêm bài kinh</button>
+    <div><button class="btn ghost" id="playT" type="button"></button><button class="btn ghost" id="bellAll" type="button">🔔 Thỉnh chuông cho mọi người</button></div></div>
+  <div class="card"><h2>Thông báo cho mọi người</h2><input id="nt" maxlength="120" placeholder="Nội dung thông báo (để trống để xóa)"><button class="btn" id="sendN" type="button">Gửi thông báo</button></div>
+  <div class="card"><h2>Đang ngồi</h2><div id="who"></div><button class="btn red" id="kickAll" type="button">Mời tất cả ra</button></div>
+</div>
+<div class="err" id="gErr" style="text-align:center"></div>
+</main>
+<script type="module">
+import {firebaseConfig} from './firebase-config.js';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {getDatabase,ref,onValue,set,update,remove} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+const $=id=>document.getElementById(id);
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
+let cfg={},seats={},sel=null,started=false,btns=[];
+const err=t=>{$('gErr').textContent=t||''};
+const run=async f=>{try{err('');await f();}catch(e){err('Không thực hiện được: '+(e.code||e.message));}};
+
+$('loginBtn').onclick=async()=>{
+  $('loginErr').textContent='';
+  try{await signInWithEmailAndPassword(auth,$('em').value.trim().toLowerCase(),$('pw').value);}
+  catch(e){$('loginErr').textContent='Sai email hoặc mật khẩu.';}
+};
+$('outBtn').onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async u=>{
+  if(u&&u.email){
+    try{await set(ref(db,'adminPing'),Date.now());}
+    catch(e){$('loginErr').textContent='Tài khoản này không có quyền quản trị.';await signOut(auth);return;}
+    $('loginBox').hidden=true;$('panel').hidden=false;start();
+  }else{$('loginBox').hidden=false;$('panel').hidden=true;}
+});
+
+function start(){
+  if(started)return;started=true;
+  onValue(ref(db,'config'),s=>{cfg=s.val()||{};draw();});
+  onValue(ref(db,'seats'),s=>{seats=s.val()||{};draw();});
+}
+function buildGrid(n){grid.textContent='';btns=[];for(let s=1;s<=n;s++){const b=document.createElement('button');b.className='seat';b.type='button';b.dataset.s=s;grid.appendChild(b);btns.push(b);}}
+const grid=$('grid');
+grid.addEventListener('click',e=>{const b=e.target.closest('.seat');if(b){sel=+b.dataset.s;draw();}});
+
+function mins(since){return Math.max(0,Math.floor((Date.now()-since)/60000));}
+function draw(){
+  const hasCfg=cfg&&cfg.seats;
+  $('initBox').hidden=!!hasCfg;
+  const n=cfg.seats||100,locked=cfg.locked||{};
+  if(btns.length!==n)buildGrid(n);
+  let taken=0;
+  btns.forEach((b,i)=>{const s=i+1,e=seats[s];b.className='seat';
+    if(e){taken++;b.classList.add('taken');b.textContent=e.nick||String(s);}
+    else if(locked[s]){b.classList.add('lock');b.textContent='🔒 '+s;}
+    else b.textContent=String(s);
+    if(sel===s)b.classList.add('sel');});
+  $('stat').textContent=taken+'/'+n+' chỗ có người';
+  if(!$('seatN').matches(':focus'))$('seatN').value=n;
+  const d=$('detail');d.textContent='';
+  if(sel){
+    const e=seats[sel],h=document.createElement('h2');h.textContent='Chỗ số '+sel;d.appendChild(h);
+    const p=document.createElement('div');p.className='small';p.textContent=e?('Đang ngồi: '+(e.nick||'Khách')+' ('+mins(e.since)+' phút)'):(locked[sel]?'Chỗ đang bị khóa':'Chỗ trống');d.appendChild(p);
+    if(e){const b=document.createElement('button');b.className='btn red';b.textContent='Mời ra';b.onclick=()=>run(()=>remove(ref(db,'seats/'+sel)));d.appendChild(b);}
+    const l=document.createElement('button');l.className='btn';l.textContent=locked[sel]?'Mở khóa chỗ':'Khóa chỗ';
+    l.onclick=()=>run(()=>locked[sel]?remove(ref(db,'config/locked/'+sel)):set(ref(db,'config/locked/'+sel),true));d.appendChild(l);
+  }else d.innerHTML='<span class="small">Bấm vào một chỗ để quản lý.</span>';
+  const tr=$('tracks');tr.textContent='';
+  Object.entries(cfg.tracks||{}).forEach(([id,t])=>{
+    const r=document.createElement('div');r.className='row';
+    const nm=document.createElement('span');nm.textContent=(cfg.current===id?'▶ ':'')+t.name;r.appendChild(nm);
+    const bx=document.createElement('span');
+    const u=document.createElement('button');u.className='btn';u.textContent='Dùng';u.onclick=()=>run(()=>update(ref(db,'config'),{current:id}));
+    const x=document.createElement('button');x.className='btn red';x.textContent='Xóa';
+    x.onclick=()=>run(async()=>{const rest=Object.keys(cfg.tracks).filter(k=>k!==id);await remove(ref(db,'config/tracks/'+id));if(cfg.current===id)await update(ref(db,'config'),{current:rest[0]||null});});
+    bx.appendChild(u);bx.appendChild(x);r.appendChild(bx);tr.appendChild(r);
+  });
+  $('playT').textContent=cfg.playing===false?'▶ Phát kinh':'⏸ Tạm dừng kinh';
+  const w=$('who');w.textContent='';
+  Object.keys(seats).map(Number).sort((a,b)=>a-b).forEach(s=>{
+    const e=seats[s],r=document.createElement('div');r.className='row';
+    const t=document.createElement('span');t.textContent='Chỗ '+s+': '+(e.nick||'Khách')+' – '+mins(e.since)+' phút';r.appendChild(t);
+    const b=document.createElement('button');b.className='btn red';b.textContent='Mời ra';b.onclick=()=>run(()=>remove(ref(db,'seats/'+s)));r.appendChild(b);w.appendChild(r);
+  });
+  if(!Object.keys(seats).length)w.innerHTML='<span class="small">Chưa có ai ngồi.</span>';
+}
+setInterval(()=>{if(started)draw();},30000);
+
+$('initBtn').onclick=()=>run(()=>set(ref(db,'config'),{seats:100,current:'t1',playing:true,tracks:{t1:{name:'Bài kinh 1',url:'kinh1.mp3'}}}));
+$('saveN').onclick=()=>run(async()=>{
+  const n=Math.max(1,Math.min(300,parseInt($('seatN').value,10)||100)),up={};
+  Object.keys(seats).forEach(k=>{if(+k>n)up['seats/'+k]=null;});
+  Object.keys(cfg.locked||{}).forEach(k=>{if(+k>n)up['config/locked/'+k]=null;});
+  up['config/seats']=n;await update(ref(db),up);
+});
+$('addT').onclick=()=>run(async()=>{
+  const name=$('tn').value.trim(),url=$('tu').value.trim();if(!name||!url){err('Nhập đủ tên và file/link bài kinh.');return;}
+  const id='t'+Date.now();await set(ref(db,'config/tracks/'+id),{name,url});
+  if(!cfg.current)await update(ref(db,'config'),{current:id});$('tn').value='';$('tu').value='';
+});
+$('playT').onclick=()=>run(()=>update(ref(db,'config'),{playing:cfg.playing===false}));
+$('bellAll').onclick=()=>run(()=>update(ref(db,'config'),{bell:Date.now()}));
+$('sendN').onclick=()=>run(()=>update(ref(db,'config'),{notice:$('nt').value.trim()||null}));
+$('kickAll').onclick=()=>{if(!confirm('Mời tất cả mọi người ra khỏi chỗ ngồi?'))return;run(()=>{const up={};Object.keys(seats).forEach(k=>up['seats/'+k]=null);return update(ref(db),up);});};
+</script>
+</body>
+</html>
